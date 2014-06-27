@@ -1,10 +1,7 @@
 require 'rubygems'
-require 'json'
 require 'open-uri'
 
-puts "Paste the public URL to your file!"
-url = gets
-file = open(url)
+file = open(ARGV[0])
 
 #create array of lines
 menu_list = []
@@ -22,15 +19,17 @@ items = Hash.new
 
 
 menu_list.each do |list_item|
-  item_array = list_item.split(",")
-  name = item_array[0]
-  price = item_array[1].tr('$', '').to_f
-  hash = Hash[price, name]
-  items.merge!(hash)
+  if list_item != nil
+    item_array = list_item.split(",")
+    name = item_array[0]
+    price = item_array[1].tr('$', '').to_f
+    hash = Hash[price, name]
+    items.merge!(hash)
+  end
 end
 
 
-test_dishes = {2=>"poop", 5=>"meep", 4=>"boop", 3=>"loop"}
+test_dishes = {2=>"blue milk", 5=>"bread", 4=>"figgy pudding", 3=>"cocoa krispies"}
 
 
 
@@ -53,17 +52,23 @@ def pricecheck(dishes, desired_sum)
     }
   end
 
-  prices_of_dishes = full_array
+  letter = ARGV[1]
+
+  if letter == "All"
+    prices_of_dishes = full_array
+  else
+    prices_of_dishes = prices
+  end
 
   #test possible combos with dulpicates
   if desired_sum == 0
-    puts "No money, more problems. You can't get something for nothing!"
+    puts "No money, no food :("
   else
     number = 1
     combos = Hash.new
     (0..maximum_no_of_items).each{|possible_number_of_dishes|
       prices_of_dishes.combination(possible_number_of_dishes).each{|this_combo|
-        if this_combo.inject(:+) == desired_sum
+        if this_combo.inject(:+).to_f == desired_sum
           key = "Combination " + number.to_s
           value = []
           this_combo.each do |one_price|
@@ -79,14 +84,20 @@ def pricecheck(dishes, desired_sum)
       puts "No combinations for that amount of cash, sorry!"
     else
       com_number = 1
+      #output only unique combos
       possible_combos = combos.values.uniq
       number_of_possible_combos = possible_combos.count
-      puts "There are " + number_of_possible_combos.to_s + " combinations for $" + desired_sum.to_s
+      if number_of_possible_combos == 1
+        puts "There is " + number_of_possible_combos.to_s + " combination for $" + desired_sum.to_s
+      else
+        puts "There are " + number_of_possible_combos.to_s + " combinations for $" + desired_sum.to_s
+      end
       possible_combos.each do |combo|
+        puts "---------------"
         puts "Combo " + com_number.to_s + ":"
         item_names = combo.uniq
         item_names.each do |item|
-          puts "#{combo.count(item)} #{item}"
+          puts "#{combo.count(item)}x #{item}"
         end
         com_number = com_number + 1
       end
