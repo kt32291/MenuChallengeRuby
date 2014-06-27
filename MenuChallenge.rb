@@ -76,12 +76,18 @@ def pricecheck(dishes, desired_sum)
       }
     }
     if combos.length == 0
-      puts "Nada"
+      puts "No combinations for that amount of cash, sorry!"
     else
       com_number = 1
-      combos.values.uniq.each do |combo|
+      possible_combos = combos.values.uniq
+      number_of_possible_combos = possible_combos.count
+      puts "There are " + number_of_possible_combos.to_s + " combinations for $" + desired_sum.to_s
+      possible_combos.each do |combo|
         puts "Combo " + com_number.to_s + ":"
-        puts combo
+        item_names = combo.uniq
+        item_names.each do |item|
+          puts "#{combo.count(item)} #{item}"
+        end
         com_number = com_number + 1
       end
     end
